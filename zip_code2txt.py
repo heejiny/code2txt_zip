@@ -54,7 +54,7 @@ if uploaded_file is not None:
 
     st.write(f"선택된 파일 갯수: {selected_file_count}")
 
-    output_file_format = st.selectbox("다운로드할 파일 형식을 선택하세요:", ['.txt', '.md'])
+    output_file_format = st.radio("다운로드할 파일 형식을 선택하세요:", ['.txt', '.md'])
 
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
