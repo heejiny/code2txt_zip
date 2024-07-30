@@ -21,8 +21,9 @@ def display_file_tree(file_tree, path=''):
     for key, value in file_tree.items():
         new_path = os.path.join(path, key)
         if isinstance(value, dict):
-            st.checkbox(new_path, value=True, key=new_path)
-            display_file_tree(value, new_path)
+            with st.expander(key, expanded=True):
+                st.checkbox(new_path, value=True, key=new_path)
+                display_file_tree(value, new_path)
         else:
             st.checkbox(new_path, value=True, key=new_path)
 
