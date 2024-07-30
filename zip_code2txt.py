@@ -21,7 +21,7 @@ def process_zip_file(zip_file, output_file_name):
             if file_name.endswith(tuple(extensions)):
                 with zip_ref.open(file_name) as file:
                     content = file.read().decode('utf-8')
-                    output.write(f'// 파일명: {file_name}\n')
+                    output.write(f'// file path : {file_name}\n')
                     output.write(content + '\n\n')
                     file_count += 1
             total_files += 1
