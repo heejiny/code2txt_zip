@@ -16,13 +16,23 @@ def generate_file_tree(zip_file):
                 current = current[part]
         return file_tree
 
+# 폴더 체크박스 상태를 업데이트하는 함수
+def update_folder_state(state, folder_path, checked):
+    for key in st.session_state:
+        if key.startswith(folder_path):
+            st.session_state[key] = checked
+
 # 파일 트리를 재귀적으로 보여주는 함수
 def display_file_tree(file_tree, path=''):
     for key, value in file_tree.items():
         new_path = os.path.join(path, key)
         if isinstance(value, dict):
-            if st.checkbox(f"폴더: {key}", value=True, key=new_path):
-                display_file_tree(value, new_path)
+            folder_checked = st.checkbox(f"폴더: {key}", value=True, key=new_path, on_change=update_folder_state, args=(new_path, st.session_state[new_path]))
+            if folder_checked:
+                with st.expander(f"폴더: {key}", expanded=True):
+                    display_file_tree(value, new_path)
+            else:
+                update_folder_state(st.session_state, new_path, False)
         else:
             st.checkbox(f"파일: {key}", value=True, key=new_path)
 
