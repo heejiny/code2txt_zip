@@ -39,7 +39,6 @@ st.markdown("""
 uploaded_file = st.file_uploader("ZIP 파일을 업로드하세요", type=['zip'])
 
 if uploaded_file is not None:
-    # Define default options
     excluded_files_options = [
         '.next', 'node_modules', 'components/ui', '.json', '.gitignore', 'next-env.ts',
         'next.config.js', 'README.md', '.txt'
@@ -48,22 +47,15 @@ if uploaded_file is not None:
     
     st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
     
-    # Create a column layout for checkboxes
-    col1, col2 = st.columns(2)
+    excluded_files_selected = []
+    for item in excluded_files_options:
+        if not st.checkbox(item, value=True):
+            excluded_files_selected.append(item)
     
-    with col1:
-        st.write("#### 제외할 파일 및 폴더 (체크 해제)")
-        excluded_files_selected = []
-        for item in excluded_files_options:
-            if not st.checkbox(f'제외할: {item}', value=True):
-                excluded_files_selected.append(item)
-    
-    with col2:
-        st.write("#### 포함할 파일 확장자 (체크된 상태)")
-        extensions_selected = []
-        for ext in extensions_options:
-            if st.checkbox(f'포함할 확장자: {ext}', value=ext in ['.tsx', '.ts', '.js', '.jsx']):
-                extensions_selected.append(ext)
+    extensions_selected = []
+    for ext in extensions_options:
+        if st.checkbox(ext, value=ext in ['.tsx', '.ts', '.js', '.jsx']):
+            extensions_selected.append(ext)
     
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
