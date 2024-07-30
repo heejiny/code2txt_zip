@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 import zipfile
 import os
 import io
@@ -47,16 +47,18 @@ if uploaded_file is not None:
     
     for i, ext in enumerate(extensions_options):
         with cols[i % 5]:  # Distribute checkboxes across 5 columns
-            if st.checkbox(ext, value=True):
+            if st.checkbox(ext, value=False):
                 extensions_selected.append(ext)
     
     selected_file_count = sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
 
     st.write(f"선택된 파일 갯수: {selected_file_count}")
 
+    output_file_format = st.selectbox("다운로드할 파일 형식을 선택하세요:", ['.txt', '.md'])
+
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
-            output_file_name = uploaded_file.name.replace('.zip', '_code2txt.txt')
+            output_file_name = uploaded_file.name.replace('.zip', f'_code2{output_file_format}')
             total_files, file_count = process_zip_file(uploaded_file, output_file_name, extensions_selected)
             
             with open(output_file_name, 'rb') as f:
