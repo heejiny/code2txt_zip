@@ -21,11 +21,10 @@ def display_file_tree(file_tree, path=''):
     for key, value in file_tree.items():
         new_path = os.path.join(path, key)
         if isinstance(value, dict):
-            with st.expander(key, expanded=True):
-                st.checkbox(new_path, value=True, key=new_path)
+            if st.checkbox(f"폴더: {key}", value=True, key=new_path):
                 display_file_tree(value, new_path)
         else:
-            st.checkbox(new_path, value=True, key=new_path)
+            st.checkbox(f"파일: {key}", value=True, key=new_path)
 
 # ZIP 파일을 처리하여 텍스트 파일로 기록하는 함수
 def process_zip_file(zip_file, selected_files, output_file_name):
