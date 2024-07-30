@@ -42,7 +42,13 @@ if uploaded_file is not None:
 
     st.write("### 텍스트 파일에 기록할 파일의 확장자를 선택해주세요.")
     
-    extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=False)]
+    cols = st.columns(5)
+    extensions_selected = []
+    
+    for i, ext in enumerate(extensions_options):
+        with cols[i % 5]:  # Distribute checkboxes across 5 columns
+            if st.checkbox(ext, value=False):
+                extensions_selected.append(ext)
     
     selected_file_count = sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
 
