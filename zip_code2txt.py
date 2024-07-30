@@ -3,15 +3,13 @@ import zipfile
 import os
 import io
 
-def process_zip_file(zip_file, output_file_name, excluded_files, extensions):
+def process_zip_file(zip_file, output_file_name, extensions):
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         file_count = 0
         total_files = 0
         output = io.StringIO()
         
         for file_name in zip_ref.namelist():
-            if any(excluded in file_name for excluded in excluded_files):
-                continue
             if file_name.endswith(tuple(extensions)):
                 with zip_ref.open(file_name) as file:
                     content = file.read().decode('utf-8')
@@ -29,9 +27,9 @@ def process_zip_file(zip_file, output_file_name, excluded_files, extensions):
 st.title('코드 파일 처리기 (ZIP 지원)')
 
 st.markdown("""
-이 앱은 ZIP 파일에서 코드 파일을 추출하고, 사용자가 선택한 파일 및 확장자에 따라 필터링하여 하나의 텍스트 파일로 결합합니다.
+이 앱은 ZIP 파일에서 코드 파일을 추출하고, 사용자가 선택한 확장자에 따라 필터링하여 하나의 텍스트 파일로 결합합니다.
 - **ZIP 파일 업로드**: 분석할 ZIP 파일을 업로드합니다.(최대 200MB)
-- **체크된 폴더, 파일, 확장자만 기록합니다.
+- **체크된 확장자만 기록합니다.**
 - **코드 파일 다운로드**: 처리된 코드를 다운로드할 수 있습니다.
 """)
 
@@ -40,30 +38,20 @@ uploaded_file = st.file_uploader("ZIP 파일을 업로드하세요", type=['zip'
 if uploaded_file is not None:
     with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
         file_names = zip_ref.namelist()
-        excluded_files_options = list(set([os.path.dirname(name) for name in file_names if os.path.dirname(name)]))
         extensions_options = list(set([os.path.splitext(name)[1] for name in file_names if os.path.splitext(name)[1]]))
 
-    st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
+    st.write("### 텍스트 파일에 기록할 파일의 확장자를 선택해주세요.")
     
-    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(f'[folder] {item}', value=True)]
     extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=False)]
     
-    selected_file_count = 0
-    folder_counts = {}
-    
-    for folder in excluded_files_selected:
-        folder_files = [name for name in file_names if name.startswith(folder) and not name.endswith(tuple(extensions_selected))]
-        folder_counts[folder] = len(folder_files)
-        selected_file_count += len(folder_files)
-    
-    selected_file_count += sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
+    selected_file_count = sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
 
     st.write(f"선택된 파일 갯수: {selected_file_count}")
 
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
             output_file_name = uploaded_file.name.replace('.zip', '_code2txt.txt')
-            total_files, file_count = process_zip_file(uploaded_file, output_file_name, excluded_files_selected, extensions_selected)
+            total_files, file_count = process_zip_file(uploaded_file, output_file_name, extensions_selected)
             
             with open(output_file_name, 'rb') as f:
                 st.download_button(
