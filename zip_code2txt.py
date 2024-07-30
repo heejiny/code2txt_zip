@@ -31,7 +31,6 @@ st.title('코드 파일 처리기 (ZIP 지원)')
 st.markdown("""
 이 앱은 ZIP 파일에서 코드 파일을 추출하고, 사용자가 선택한 파일 및 확장자에 따라 필터링하여 하나의 텍스트 파일로 결합합니다.
 - **ZIP 파일 업로드**: 분석할 ZIP 파일을 업로드합니다.(최대 200MB)
-- **텍스트 파일(.txt)로 기록할 파일을 선택해주세요.**
 - **체크된 폴더, 파일, 확장자만 기록합니다.
 - **코드 파일 다운로드**: 처리된 코드를 다운로드할 수 있습니다.
 """)
@@ -39,14 +38,18 @@ st.markdown("""
 uploaded_file = st.file_uploader("ZIP 파일을 업로드하세요", type=['zip'])
 
 if uploaded_file is not None:
-    excluded_files_options = []
-    extensions_options = []
-    
-    st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
+    with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
+        file_names = zip_ref.namelist()
+        excluded_files_options = list(set([os.path.dirname(name) for name in file_names]))
+        extensions_options = list(set([os.path.splitext(name)[1] for name in file_names if os.path.splitext(name)[1]]))
 
-    extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=ext in ['.tsx', '.ts', '.js', '.jsx'])]
-    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(item, value=False)]
+    st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
     
+    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(item, value=True)]
+    extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=ext in ['.tsx', '.ts', '.js', '.jsx'])]
+    
+    st.write(f"선택된 파일 갯수: {len(extensions_selected)}")
+
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
             output_file_name = uploaded_file.name.replace('.zip', '_code2txt.txt')
