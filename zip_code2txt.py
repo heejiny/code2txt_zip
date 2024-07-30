@@ -24,7 +24,8 @@ def process_zip_file(zip_file, output_file_name, extensions):
         
         return total_files, file_count
 
-st.title('코드 파일 처리기 (ZIP 지원). feat. 내가 쓸라고 만든 앱')
+st.title('코드 파일 처리기 (ZIP 지원))
+         st.subtitle('feat. 내가 쓸라고 만든 앱')
 
 st.markdown("""
 이 앱은 ZIP 파일에서 코드 파일을 추출하고, 사용자가 선택한 확장자에 따라 필터링하여 하나의 텍스트 파일로 결합합니다.
