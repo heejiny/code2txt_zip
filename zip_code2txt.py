@@ -39,11 +39,8 @@ st.markdown("""
 uploaded_file = st.file_uploader("ZIP 파일을 업로드하세요", type=['zip'])
 
 if uploaded_file is not None:
-    excluded_files_options = [
-        '.next', 'node_modules', 'components/ui', '.json', '.gitignore', 'next-env.ts',
-        'next.config.js', 'README.md', '.txt'
-    ]
-    extensions_options = ['.tsx', '.ts', '.js', '.jsx', '.py', '.java', '.rb', '.cpp', '.c']
+    excluded_files_options = []
+    extensions_options = []
     
     st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
 
