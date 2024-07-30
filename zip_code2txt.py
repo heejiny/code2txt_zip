@@ -47,7 +47,7 @@ if uploaded_file is not None:
     
     for i, ext in enumerate(extensions_options):
         with cols[i % 5]:  # Distribute checkboxes across 5 columns
-            if st.checkbox(ext, value=False):
+            if st.checkbox(ext, value=True):
                 extensions_selected.append(ext)
     
     selected_file_count = sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
