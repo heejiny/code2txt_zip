@@ -46,9 +46,9 @@ if uploaded_file is not None:
     extensions_options = ['.tsx', '.ts', '.js', '.jsx', '.py', '.java', '.rb', '.cpp', '.c']
     
     st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
-    
-    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(item, value=True)]
+
     extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=ext in ['.tsx', '.ts', '.js', '.jsx'])]
+    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(item, value=False)]
     
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
