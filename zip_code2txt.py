@@ -17,7 +17,7 @@ def generate_file_tree(zip_file):
         return file_tree
 
 # 폴더 체크박스 상태를 업데이트하는 함수
-def update_folder_state(state, folder_path, checked):
+def update_folder_state(folder_path, checked):
     for key in st.session_state:
         if key.startswith(folder_path):
             st.session_state[key] = checked
@@ -27,14 +27,15 @@ def display_file_tree(file_tree, path=''):
     for key, value in file_tree.items():
         new_path = os.path.join(path, key)
         if isinstance(value, dict):
-            folder_checked = st.checkbox(f"폴더: {key}", value=True, key=new_path, on_change=update_folder_state, args=(new_path, st.session_state[new_path]))
-            if folder_checked:
-                with st.expander(f"폴더: {key}", expanded=True):
-                    display_file_tree(value, new_path)
-            else:
-                update_folder_state(st.session_state, new_path, False)
+            if new_path not in st.session_state:
+                st.session_state[new_path] = True
+            folder_checked = st.checkbox(f"폴더: {key}", value=st.session_state[new_path], key=new_path, on_change=update_folder_state, args=(new_path, st.session_state[new_path]))
+            with st.expander(f"폴더: {key}", expanded=True):
+                display_file_tree(value, new_path)
         else:
-            st.checkbox(f"파일: {key}", value=True, key=new_path)
+            if new_path not in st.session_state:
+                st.session_state[new_path] = True
+            st.checkbox(f"파일: {key}", value=st.session_state[new_path], key=new_path)
 
 # ZIP 파일을 처리하여 텍스트 파일로 기록하는 함수
 def process_zip_file(zip_file, selected_files, output_file_name):
