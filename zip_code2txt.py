@@ -40,15 +40,25 @@ uploaded_file = st.file_uploader("ZIP 파일을 업로드하세요", type=['zip'
 if uploaded_file is not None:
     with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
         file_names = zip_ref.namelist()
-        excluded_files_options = list(set([os.path.dirname(name) for name in file_names]))
+        excluded_files_options = list(set([os.path.dirname(name) for name in file_names if os.path.dirname(name)]))
         extensions_options = list(set([os.path.splitext(name)[1] for name in file_names if os.path.splitext(name)[1]]))
 
     st.write("### 텍스트 파일에 기록할 파일을 선택해주세요.")
     
-    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(item, value=True)]
-    extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=ext in ['.tsx', '.ts', '.js', '.jsx'])]
+    excluded_files_selected = [item for item in excluded_files_options if not st.checkbox(f'[folder] {item}', value=True)]
+    extensions_selected = [ext for ext in extensions_options if st.checkbox(ext, value=False)]
     
-    st.write(f"선택된 파일 갯수: {len(extensions_selected)}")
+    selected_file_count = 0
+    folder_counts = {}
+    
+    for folder in excluded_files_selected:
+        folder_files = [name for name in file_names if name.startswith(folder) and not name.endswith(tuple(extensions_selected))]
+        folder_counts[folder] = len(folder_files)
+        selected_file_count += len(folder_files)
+    
+    selected_file_count += sum(1 for name in file_names if name.endswith(tuple(extensions_selected)))
+
+    st.write(f"선택된 파일 갯수: {selected_file_count}")
 
     if st.button('기록하기'):
         if zipfile.is_zipfile(uploaded_file):
