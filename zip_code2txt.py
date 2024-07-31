@@ -12,7 +12,10 @@ def process_zip_file(zip_file, output_file_name, extensions):
         for file_name in zip_ref.namelist():
             if file_name.endswith(tuple(extensions)):
                 with zip_ref.open(file_name) as file:
-                    content = file.read().decode('utf-8')
+                    try:
+                        content = file.read().decode('utf-8')
+                    except UnicodeDecodeError:
+                        content = file.read().decode('latin-1')  # Fallback to latin-1 encoding
                     output.write(f'// file path : {file_name}\n')
                     output.write(content + '\n\n')
                     file_count += 1
